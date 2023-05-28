@@ -1,0 +1,96 @@
+﻿@model WebApplication1.Models.ProductsListModel;
+
+@{
+    ViewData["Title"] = "Титульная страница";
+}
+
+<!--Контейнер разделённый на две секции-->
+<div class="d-flex flex-row gap-1">
+    <!--Блок меню-->
+    <div class="col-3 d-none d-sm-block h-100" id="menu">
+    </div>
+    <!--Блок контента-->
+    <div class="col-12 col-sm-9">
+        <!--Блок карусели-->
+        <div style="height: 600px;" id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+            <div style="height: 600px;" class="carousel-inner">
+                <!--Содержимое карусели, первый элемент выбран как активный-->
+                <div style="height: 600px;" class="carousel-item active">
+                    <img style="height: 600px; width: 100%;" src="~/Uploads/Wv06yc3VxDc.jpg" class="img-thumbnail d-block w-100">
+                </div>
+                <div style="height: 600px;" class="carousel-item">
+                    <img style="height: 600px; width: 100%;" src="~/Uploads/IrRbYbbytNw.jpg" class="img-thumbnail d-block w-100">
+                </div>
+                <div style="height: 600px;" class="carousel-item">
+                    <img style="height: 600px; width: 100%;" src="~/Uploads/DxriqSQ5vgI.jpg" class="img-thumbnail d-block w-100">
+                </div>
+            </div>
+            <!--Кнопка управления Назад-->
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <!--Кнопка управления Вперёд-->
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+        <!--Блок с товарами-->
+        <div class="card w-100 d-flex flex-column my-5">
+            <!--Заголовок-->
+            <h1 class="mt-4 ms-3">Доступные товары</h1>
+            <!--Блок с товарами-->
+            <div class="pb-4 d-flex flex-row flex-wrap mt-4">
+                <!--Отображение продукции в карточках-->
+                @foreach (var product in Model.ProductsWithFavs)
+                {
+                    <div class="card rounded-3 card-width">
+                        <div class="card-img rounded-top">
+                            <!--Элемент звёздочка-->
+                            @if (User?.Identity != null && User.Identity.IsAuthenticated)
+                            {
+                                <label class="position-absolute" style="right: 15px; top: 15px; filter: drop-shadow(0px 0px 3px #000);">
+                                    <input class="star" @(product.IsFavorite ? "checked" : "") type="checkbox"/>
+                                    <span class="icon-star" onclick="toFavorite('@product.Id');"></span>
+                                </label>
+                            }
+                            <img class="rounded-top" src="Uploads/@product.WrapperImage" style="width: 100%; height: 200px;"/>
+                        </div>
+                        <!--Контейнер с названием и описанием товара-->
+                        <div class="card-body">
+                            <h5 class="crop-text-3 text-title">@product.Name</h5>
+                            <p class="crop-text-4 text-description">@product.Description</p>
+                            <a class="btn btn-primary w-100" href="Products/Get/@product.Id">Подробнее</a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<!--MVC секция для скриптов js-->
+
+@section Scripts {
+    <script>
+        $('#menu').load('@Url.Content("/Categories/GetAllPartial")');
+        $('#menu-mobile').load('@Url.Content("/Categories/GetAllPartial")');
+
+        const toFavorite = (id) => {
+            $.ajax({
+                url: '@Url.Action("Add", "Favorites")',
+                method: 'PUT',
+                data: { productId: id },
+                async: false
+            })
+        }
+
+        const getFavorite = () => {
+            return $.ajax({
+                url: '@Url.Action("GetAll", "Favorites")',
+                method: 'GET',
+                async: false
+            })
+        }
+    </script>
+}

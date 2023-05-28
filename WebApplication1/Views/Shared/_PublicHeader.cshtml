@@ -1,0 +1,24 @@
+﻿<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+    <div class="container-lg container-fluid">
+        <div class="d-flex justify-content-between w-100">
+            <button 
+                class="navbar-toggler border-0" 
+                type="button"
+                aria-expanded="false"
+                data-bs-toggle="offcanvas" 
+                data-bs-target="#offcanvasExample" 
+                aria-controls="offcanvasExample">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand text-uppercase" asp-area="" asp-controller="Home" asp-action="Index">
+                <img src="~/images/OkODUSGUeTw.jpg" alt="Logo" width="50" height="50">
+                beautyco
+            </a>
+            <partial name="_Search" />
+            <div class="col-2 d-md-flex flex-row justify-content-end d-none align-items-center">
+                <a style="height: 38px;" class="btn btn-primary me-2" asp-controller="Public" asp-action="Login">Войти</a>
+                <a style="height: 38px;" class="nav-link text-dark" asp-controller="Public" asp-action="Registration">Регистрация</a>
+            </div>
+        </div>
+    </div>
+</nav>

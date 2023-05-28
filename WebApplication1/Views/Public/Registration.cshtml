@@ -1,0 +1,45 @@
+@{
+    ViewData["Title"] = "Регистрация";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model RegistrationModel
+
+<div class="card mx-auto col-9 col-md-5 col-lg-3 py-3">
+    <h2 class="text-center">Регистрация</h2>
+    <form asp-controller="Public" class="mx-auto d-flex flex-column" asp-action="Registration" method="post" style="width: 85%;">
+        <label class="mt-0">Имя</label>
+        <input class="form-control" asp-for="Name" type="text" placeholder="Введите ваше имя" />
+        <span class="text-danger" asp-validation-for="Name"></span>
+
+        <label class="mt-3">Фамилия</label>
+        <input class="form-control" asp-for="Surname" type="text" placeholder="Введите фамилию" />
+        <span class="text-danger" asp-validation-for="Surname"></span>
+
+        <label class="mt-3">Отчество</label>
+        <input class="form-control" asp-for="FatherName" type="text" placeholder="Введите фамилию" />
+        <span class="text-danger" asp-validation-for="FatherName"></span>
+
+        <label class="mt-3">E-Mail</label>
+        <input class="form-control" asp-for="Email" type="email" placeholder="Введите E-Mail" />
+        <span class="text-danger" asp-validation-for="Email"></span>
+
+        <label class="mt-3">Логин</label>
+        <input class="form-control" asp-for="Login" type="text" placeholder="Введите Логин" />
+        <span class="text-danger" asp-validation-for="Login"></span>
+
+        <label class="mt-3">Телефон</label>
+        <input class="form-control" asp-for="Phone" value="+7" type="tel" placeholder="+7xxxxxxxx00" />
+        <span class="text-danger" asp-validation-for="Phone"></span>
+
+        <label class="mt-3">Пароль</label>
+        <input class="form-control" asp-for="Password" type="password" placeholder="Минимум 8 символов" />
+        <span class="text-danger" asp-validation-for="Password"></span>
+
+        <label class="mt-3">Подтвердите пароль</label>
+        <input class="form-control" asp-for="ConfirmPassword" type="password" placeholder="Повторите пароль" />
+        <span class="text-danger" asp-validation-for="ConfirmPassword"></span>
+
+        <input class="btn btn-primary mt-4" type="submit" value="Зарегистрироваться" />
+    </form>
+</div>

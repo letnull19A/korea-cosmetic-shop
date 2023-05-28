@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href='~/lib/bootstrap/dist/css/bootstrap.min.css'/>
+    <link rel="stylesheet" href='~/css/site.css' asp-append-version="true"/>
+    <link rel="stylesheet" href='~/WebApplication1.styles.css' asp-append-version="true"/>
+    <link href='~/lib/mermaid.min.css' rel="stylesheet"/>
+    <link rel="stylesheet" type="text/css" href="~/lib/fontawesome/css/all.css"/>
+    <script src='@Url.Content("~/lib/jquery.min.js")'></script>
+    <script src='@Url.Content("~/lib/gridjs.production.min.js")'></script>
+    <script src='@Url.Content("~/lib/popper.min.js")'></script>
+    <script src='@Url.Content("~/lib/jquery-validation/dist/jquery.validate.min.js")'></script>
+    <script src='@Url.Content("~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js")'></script>
+    <script src='@Url.Content("~/lib/bootstrap.min.js")'></script>
+    <script src='@Url.Content("~/lib/gridjs.umd.js")'></script>
+    <script src='@Url.Content("~/lib/jquery.qrcode.min.js")'></script>
+    <script src='@Url.Content("~/js/site.js")' asp-append-version="true"></script>
+</head>
+<body>
+<header>
+    @if (User?.Identity != null && User.Identity.IsAuthenticated)
+    {
+        <partial name="_AuthenticatedHeader"/>
+    }
+    else
+    {
+        <partial name="_PublicHeader"/>
+    }
+</header>
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+    <div class="offcanvas-header">
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        <a class="navbar-brand text-uppercase offcanvas-title" id="offcanvasExampleLabel" asp-controller="Home" asp-action="Index">
+            <img src="~/images/OkODUSGUeTw.jpg" alt="Logo" width="60" height="50">
+            beautyco
+        </a>
+    </div>
+    <div class="offcanvas-body">
+        @if (User?.Identity != null && User.Identity.IsAuthenticated)
+        {
+            <div class="mt-3">
+                <a class="mt-3 mb-3 text-primary d-flex flex-row align-items-center" href="/Basket/GetAll">
+                    <i class="fa fa-basket-shopping"></i>
+                    <span class="ms-2">Корзина</span>
+                </a>
+                <a class="mt-3 mb-3 text-primary d-flex flex-row align-items-center" asp-controller="Authenticated" asp-action="Profile">
+                    <i class="fa fa-user"></i>
+                    <span class="ms-2">
+                        @Context.User.FindFirst("name")?.Value
+                        @Context.User.FindFirst("surname")?.Value
+                    </span>
+                </a>
+                <a class="mt-3 mb-3 text-primary d-flex flex-row align-items-center" asp-controller="Authenticated" asp-action="Logout">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span class="ms-2">Выйти</span>
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="mt-2">
+                <a class="my-2 nav-link text-primary" asp-controller="Public" asp-action="Login">Войти</a>
+                <a class="my-2 nav-link text-primary" asp-controller="Public" asp-action="Registration">Регистрация</a>
+            </div>
+        }
+        <div class="mt-3" id="menu-mobile">
+        </div>
+    </div>
+</div>
+<div class="container-lg container-fluid" style="margin-top: 100px;">
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+</div>
+
+<!--Подвал сайта-->
+<footer class="border-top footer text-muted bg-white">
+    <!--Контейнер-->
+    <div class="container">
+        &copy; 2023 - BEAUTYCO
+        <!--Ссылка на файл справки-->
+        <a href='~/docs/Spravka_na_sayt_-_ruk-vo_operatora.pdf'>Справка</a>
+    </div>
+</footer>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

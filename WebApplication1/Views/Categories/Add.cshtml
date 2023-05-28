@@ -1,0 +1,27 @@
+@using WebApplication1.DTOs
+
+@{
+    ViewData["Title"] = "Добавить категорию";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model AddCategoryDto
+
+<div class="d-flex flex-row gap-1">
+    <div class="col-3 d-none d-sm-block h-100" id="menu">
+        <partial name="_AdminMenu" />
+    </div>
+    <div class="card col-12 col-sm-9">
+        <h3 class="mt-4 ms-3">Добавление категорий</h3>
+        <form class="ms-3 pb-3" asp-controller="Categories" asp-action="Add" method="post">
+            <label>Название категории</label><br />
+            <input type="text" asp-for="Name" placeholder="Введите категорию" /><br />
+            <span class="text-danger" asp-validation-for="Name"></span><br />
+            <input class="btn btn-primary" type="submit" value="Добавить" />
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $('#menu-mobile').load('@Url.Content("/Categories/GetAllPartial")');
+</script>

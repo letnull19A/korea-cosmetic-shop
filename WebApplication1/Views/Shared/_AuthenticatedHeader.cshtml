@@ -1,0 +1,36 @@
+﻿<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+    <div class="container-lg container-fluid">
+        <div class="d-flex justify-content-between w-100">
+            <button
+                class="navbar-toggler border-0"
+                aria-expanded="false"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#offcanvasExample"
+                aria-controls="offcanvasExample">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand text-uppercase" asp-area="" asp-controller="Home" asp-action="Index">
+                <img src="~/images/OkODUSGUeTw.jpg" alt="Logo" width="50" height="50">
+                beautyco
+            </a>
+            <partial name="_Search"/>
+            <div class="col-md-5 flex-row justify-content-end d-sm-flex d-none">
+                <a class="text-primary d-flex flex-row align-items-center me-lg-5 me-4" href="/Basket/GetAll">
+                    <i class="fa fa-basket-shopping"></i>
+                    <span class="ms-2 d-none d-lg-block">Корзина</span>
+                </a>
+                <a class="text-primary d-flex flex-row align-items-center me-2" asp-controller="Authenticated" asp-action="Profile">
+                    <i class="fa fa-user me-2"></i>
+                    <span class="d-none d-lg-block">
+                        @Context.User.FindFirst("name")?.Value
+                        @Context.User.FindFirst("surname")?.Value
+                    </span>
+                </a>
+                <a class="text-primary d-flex flex-row align-items-center ms-2" asp-controller="Authenticated" asp-action="Logout">
+                    <i class="fa-solid fa-right-from-bracket me-1"></i>
+                    <span class="d-none d-lg-block">Выйти</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>

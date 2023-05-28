@@ -1,0 +1,253 @@
+﻿@using WebApplication1.Controllers;
+
+@{
+    ViewData["Title"] = "Список товаров";
+}
+
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Редактирование товара</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="unSelect()"></button>
+            </div>
+            <div class="modal-body">
+                <label for="basic-url" class="form-label">Название</label>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="product-name" aria-describedby="basic-addon3">
+                </div>
+                <label for="basic-url" class="form-label">Описание</label>
+                <div class="input-group mb-3">
+                    <textarea class="form-control" id="product-description"></textarea>
+                </div>
+                <label for="basic-url" class="form-label">Категория</label>
+                <div class="input-group mb-3">
+                    <select id="product-category"></select>
+                </div>
+                <label for="basic-url" class="form-label">Состав</label>
+                <div class="input-group mb-3">
+                    <textarea class="form-control" id="product-composition" style="min-height: 200px;"></textarea>
+                </div>
+                <label for="basic-url" class="form-label">Цена</label>
+                <div class="input-group mb-3">
+                    <input type="number" min="0" class="form-control" id="product-price" aria-describedby="basic-addon3">
+                </div>
+                <label for="basic-url" class="form-label">Количество</label>
+                <div class="input-group mb-3">
+                    <input type="number" min="0" class="form-control" id="product-count" aria-describedby="basic-addon3">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="unSelect()">Закрыть</button>
+                <button type="button" class="btn btn-primary" onclick="updateData()">Сохранить изменения</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Редактирование записи</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="unSelect()"></button>
+            </div>
+            <div class="modal-body">
+                Вы действительно хотите удалить этот товар?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="unSelect()">Отмена</button>
+                <button type="button" class="btn btn-primary" onclick="deleteData()">Подтвердить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex flex-row gap-1">
+    <div class="col-3 d-none d-sm-block h-100" id="menu">
+        <partial name="_AdminMenu" />
+    </div>
+    <div class="card col-12 col-md-9">
+        <h3 class="mt-4 ms-3">Товары</h3>
+        <div class="w-100" id="data-table"></div>
+    </div>
+</div>
+
+<script>
+
+    $('#menu-mobile').load('@Url.Content("/Categories/GetAllPartial")');
+
+    let selectedId = ''
+
+    let grid;
+
+    const loadOptionCategory = () => {
+        return $.ajax({
+            url: '@Url.Action("GetAll", "Categories")',
+            method: 'GET',
+            async: false
+        }).responseJSON
+    }
+
+    const setOptionsCategory = () => {
+        let data = loadOptionCategory()
+
+        for (let i = 0; i < data.length; i++) {
+            $('#product-category').append(`<option value='${data[i].categoryId}'>${data[i].name}</option>`)
+        }
+    }
+
+    const setSelection = (value) => {
+        $('#product-category').children().each((id, val) => {
+            $('#product-category').prop("selected", val === value)
+        })
+    }
+
+    const deleteData = () => {
+        $.ajax({
+            url: '@Url.Action("Delete", "Products")',
+            method: 'DELETE',
+            async: false,
+            data: { 'id': selectedId }
+        })
+        
+        $('#deleteModal').modal('hide');
+
+        setTimeout(() => {
+            $("#data-table").empty()
+
+            grid.updateConfig({
+                data: objectToArray(loadData())
+            }).forceRender()
+        }, 2000)
+    }
+
+    const loadData = () => {
+        return $.ajax({
+            url: '@Url.Action("GetAll", "Products")',
+            method: 'GET',
+            async: false
+        }).responseJSON
+    }
+
+    const updateData = () => {
+        $.ajax({
+            url: '@Url.Action("Update", "Products")',
+            method: 'PUT',
+            async: false,
+            data: { 
+                'id': selectedId, 
+                'name': $('#product-name').val(),
+                'description': $("#product-description").val(),
+                'composition': $('#product-composition').val(),
+                'categoryId': $('#product-category').val(),
+                'count': $('#product-count').val(),
+                'price': $('#product-price').val()
+            }
+        })
+
+        $('#editModal').modal('hide');
+
+        setTimeout(() => {
+            $("#data-table").empty();
+
+            grid.updateConfig({
+                data: objectToArray(loadData())
+            }).forceRender()
+        }, 2000)
+    }
+
+    const objectToArray = (obj) => {
+        return obj.map(i => Object.values(i))
+    }
+
+    const updateProduct = (id, name, description, count, price, composition, category) => {
+        selectedId = id;
+
+        displayProductName(name)
+        displayProductDescription(description)
+        displayComposition(composition)
+        displayCount(count)
+        displayPrice(price)
+        setSelection(category)
+
+    }
+
+    const displayProductName = (name) => {
+        $('#product-name').val(name)
+    }
+
+    const displayProductDescription = (description) => {
+        $("#product-description").val(description)
+    }
+
+    const displayComposition = (composition) => {
+        $('#product-composition').val(composition)
+    }
+
+    const displayPrice = (price) => {
+        $('#product-price').val(price)
+    }
+
+    const displayCount = (count) => {
+        $('#product-count').val(count)
+    }
+
+    const markAsDeleteble = (id) => {
+        selectedId = id
+    }
+
+    const unSelect = () => {
+        selectedId = ''
+    }
+
+    const displayTable = () => {
+        return $('#data-table').Grid({
+            columns: [
+                {
+                    name: "ID",
+                    hidden: true
+                },
+                "Название",
+                "Цена товара",
+                "Кол-во",
+                "Катогория",
+                {
+                    name: "Действия",
+                    formatter: (cell, row) => {
+                        return gridjs.html(
+                            `<button
+                                type='button'
+                                class='btn btn-primary'
+                                data-bs-toggle='modal'
+                                data-bs-target='#editModal'
+                                onclick='updateProduct(\`${row.cells[0].data}\`, \`${row.cells[1].data}\`, \`${row.cells[5].data}\`, \`${row.cells[3].data}\`, \`${row.cells[2].data}\`, \`${row.cells[7].data}\`, \`${row.cells[4].data}\`);'>Редактировать</button>
+                            <button
+                                type='button'
+                                class='btn btn-danger'
+                                data-bs-toggle='modal'
+                                data-bs-target='#deleteModal'
+                                onclick='markAsDeleteble("${row.cells[0].data}");'>Удалить</button>
+                            <a class='btn btn-info' href='/Products/Get/${row.cells[0].data}'>Смотреть</a>`
+                        )
+                    }
+                },
+                {
+                    name: "Картинка",
+                    hidden: true
+                },
+                {
+                    name: "Состав",
+                    hidden: true
+                }
+            ],
+            data: () => objectToArray(loadData())
+        })
+    }
+
+    grid = displayTable()
+    setOptionsCategory()
+
+
+
+</script>
