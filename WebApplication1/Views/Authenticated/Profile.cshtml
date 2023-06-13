@@ -1,0 +1,80 @@
+@using WebApplication1.DTOs;
+@{
+    ViewData["Title"] = "Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model AuthenticatedDto
+
+<div class="d-flex flex-row gap-1">
+    <div class="d-none d-md-block col-3 h-100 pb-3" id="menu">
+        <div class="w-100">
+            <h3 class="mt-3 ms-3">Об аккаунте</h3>
+            <ul id="list-example" class="list-group rounded-0 ms-3 me-3">
+                <li class="list-group-item list-group-item-action border-0 px-0" style="height: 50px;">
+                    <a class="ps-2 border-start border-primary border-5" href="#myData">Мои данные</a>
+                </li>
+                <li class="list-group-item list-group-item-action border-0 px-0" style="height: 50px;">
+                    <a class="ps-2 border-start border-primary border-5" href="#myOrders">Мои заказы</a>
+                </li>
+                <li class="list-group-item list-group-item-action border-0 px-0" style="height: 50px;">
+                    <a class="ps-2 border-start border-primary border-5" href="#myFeedback">Мои комментарии</a>
+                </li>
+                <li class="list-group-item list-group-item-action border-0 px-0" style="height: 50px;">
+                    <a class="ps-2 border-start border-primary border-5" href="#myFav">В избранном</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div data-bs-spy="scroll" data-bs-target="#list-example" data-bs-offset="0" class="col-12 col-md-9">
+        <div id="myData" class="card">
+            <h3 class="mt-3 ms-3">Мои данные</h3>
+            <div class="card-body m-auto m-md-0 d-flex flex-column flex-md-row">
+                <div class="profile-image">
+                    <img style="width: 300px; height: 250px;" src="~/images/Image.png"/>
+                </div>
+                <div class="profile-about d-flex flex-column ms-4">
+                    <h5>@Model.User.Name @Model.User.Surname @Model.User.FatherName</h5>
+                    <h5>E-Mail: @Model.User.Email</h5>
+                    <h5>Телефон: @Model.User.Phone</h5>
+                    <a class="d-flex flex-row align-items-center text-primary" asp-controller="Authenticated" asp-action="Logout">
+                        Выйти из аккаунта
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div id="myOrders" class="card my-4">
+            <h3 class="mt-3 ms-3">Мои заказы</h3>
+            <div class="card-body">
+                <h5>Список заказов пуст</h5>
+            </div>
+        </div>
+        <div id="myFeedback" class="card my-4">
+            <h3 class="mt-3 ms-3">Мои комментарии</h3>
+            <div class="card-body">
+                <h5>Список комментариев пуст</h5>
+            </div>
+        </div>
+        <div id="myFav" class="card my-4">
+            <h3 class="mt-3 ms-3">В избранном</h3>
+            <div class="card-body">
+                @if (!Model.Favorites.Any())
+                {
+                    <h5>Список пуст</h5>
+                    return;
+                }
+
+                @foreach(var fav in Model.Favorites)
+                {
+                    <div class="d-flex flex-row justify-content-between mt-3 mb-3">
+                        <p style="width: 50%;">@fav.ProductName</p>    
+                        <p style="width: 30%;">@fav.CategoryName</p>
+                        <a class="text-primary" href="/Products/Get/@fav.ProductId">Смотреть</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+

@@ -1,0 +1,168 @@
+﻿@using WebApplication1.Controllers;
+
+@{
+    ViewData["Title"] = "Список категорий";
+}
+
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Редактирование записи</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="unSelect()"></button>
+            </div>
+            <div class="modal-body">
+                <label for="basic-url" class="form-label">Название категории</label>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="category-update" aria-describedby="basic-addon3">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="unSelect()">Закрыть</button>
+                <button type="button" class="btn btn-primary" onclick="updateData()">Сохранить изменения</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Редактирование записи</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="unSelect()"></button>
+            </div>
+            <div class="modal-body">
+                Вы действительно хотите удалить эту категорию?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="unSelect()">Отмена</button>
+                <button type="button" class="btn btn-primary" onclick="deleteData()">Подтвердить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex flex-row gap-1 h-100">
+    <div class="col-3 d-none d-sm-block h-100" id="menu">
+        <partial name="_AdminMenu" />
+    </div>
+    <div class="card col-12 col-sm-9">
+        <h3 class="mt-4 ms-3">Категории</h3>
+        <div class="w-100" id="data-table"></div>
+    </div>
+</div>
+
+<script>
+
+    $('#menu-mobile').load('@Url.Content("/Categories/GetAllPartial")');
+
+    let selectedId = ''
+    let currentName = ''
+
+    let grid;
+
+    const deleteData = () => {
+        $.ajax({
+            url: '@Url.Action("Delete", "Categories")',
+            method: 'DELETE',
+            async: false,
+            data: { 'id': selectedId }
+        })
+
+        $('#deleteModal').modal('hide')
+
+        setTimeout(() => {
+            $("#data-table").empty()
+
+            grid.updateConfig({
+                data: objectToArray(loadData())
+            }).forceRender()
+        }, 2000)
+    }
+
+    const loadData = () => {
+        return $.ajax({
+            url: '@Url.Action("GetAll", "Categories")',
+            method: 'GET',
+            async: false
+        }).responseJSON
+    }
+
+    const updateData = () => {
+        $.ajax({
+            url: '@Url.Action("Update", "Categories")',
+            method: 'PUT',
+            async: false,
+            data: { 'categoryId': selectedId, name: $('#category-update').val() }
+        })
+
+        $('#editModal').modal('hide')
+
+        setTimeout(() => {
+            $("#data-table").empty()
+
+            grid.updateConfig({
+                data: objectToArray(loadData())
+            }).forceRender()
+        }, 2000)
+    }
+
+    const objectToArray = (obj) => {
+        return obj.map(i => Object.values(i))
+    }
+
+    const updateCategory = (id, name) => {
+        selectedId = id
+        displayCategory(name)
+    }
+
+    const displayCategory = (name) => {
+        currentName = name
+        $('#category-update').val(name)
+    }
+
+    const markAsDeleteble = (id) => {
+        selectedId = id
+    }
+
+    const unSelect = () => {
+        selectedId = ''
+    }
+
+    const displayTable = () => {
+        return $('#data-table').Grid({
+            columns: [
+                {
+                    name: "ID",
+                    hidden: true
+                },
+                "Название категории",
+                {
+                    name: "Действия",
+                    formatter: (cell, row) => {
+                        return gridjs.html(
+                            `<button
+                                                type='button'
+                                                class='btn btn-primary'
+                                                data-bs-toggle='modal'
+                                                data-bs-target='#editModal'
+                                                onclick='updateCategory("${row.cells[0].data}", "${row.cells[1].data}")'>Редактировать</button>
+                                            <button
+                                                type='button'
+                                                class='btn btn-danger'
+                                                data-bs-toggle='modal'
+                                                data-bs-target='#deleteModal'
+                                                onclick='markAsDeleteble("${row.cells[0].data}")'>Удалить</button>`
+                        )
+                    }
+                }
+            ],
+            data: () => objectToArray(loadData())
+        });
+    }
+
+    grid = displayTable();
+
+
+</script>

@@ -1,0 +1,48 @@
+@{
+    ViewData["Title"] = "Добавление товара";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using System.Collections.Specialized
+@model AddProductModel
+
+<div class="d-flex flex-row gap-1">
+    <div class="col-3 d-none d-sm-block h-100" id="menu">
+        <partial name="_AdminMenu" />
+    </div>
+    <div class="card col-12 col-sm-9">
+        <h3 class="mt-4 ms-3">Добавить товар</h3>
+
+        <form class="ms-3 pb-3" method="post" asp-action="Add" asp-controller="Products" enctype="multipart/form-data">
+            <label>Загрузите обложку</label><br/>
+            <input asp-for="WrapperImage" type="file"/><br/>
+            <span asp-validation-for="WrapperImage"></span><br/>
+            <label>Наименование товара</label><br/>
+            <input asp-for="Name" type="text"/><br/>
+            <span></span><br/>
+            <label>Описание товара</label><br/>
+            <textarea asp-for="Description"></textarea><br/>
+            <span></span><br/>
+            <label>Состав товара</label><br/>
+            <textarea asp-for="Composition"></textarea><br/>
+            <span></span><br/>
+            <label>Загрузите фотографии товара</label><br/>
+            <input asp-for="Photos" type="file" multiple="true"/><br/>
+            <span></span><br/>
+            <label>Количество</label><br/>
+            <input asp-for="Count" type="number" min="1"/><br/>
+            <span></span><br/>
+            <label>Выберете категорию товара</label><br/>
+            <select class="form-select w-auto" asp-for="@Model.CategoryId" asp-items="@Model.Categories"></select><br/>
+            <span></span><br/>
+            <label>Цена товара</label><br/>
+            <input asp-for="Price" type="number" placeholder="в рублях" min="0"/><br/>
+            <span></span><br/>
+            <input class="btn btn-primary" type="submit" value="Добавить"/>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $('#menu-mobile').load('@Url.Content("/Categories/GetAllPartial")');
+</script>

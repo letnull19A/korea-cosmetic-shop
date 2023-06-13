@@ -1,0 +1,240 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+:root {
+    --bs-primary: hotpink!important;
+}
+
+body {
+    margin-bottom: 60px;
+    background-color: rgba(246, 246, 246, 0.62);
+}
+
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 999;
+}
+
+input[type=checkbox].star {
+    display: none;
+}
+
+span.icon-star {
+    display: block;
+    width: 30px;
+    height: 28px;
+    background-image: url("../images/Vector.png");
+}
+
+.offcanvas-header {
+    padding: 0.53rem 1rem!important;
+    justify-content: flex-start;
+}
+
+.offcanvas-header .btn-close {
+    padding: 0.5rem 0.7rem;
+    margin-top: -0.5rem;
+    margin-right: -0.5rem;
+    margin-bottom: -0.5rem;
+}
+
+.offcanvas-header a,
+.offcanvas-header a:hover {
+    color: #000000!important;
+}
+
+.offcanvas-header a > img {
+    padding-left: 10px;
+}
+
+.btn:focus,
+.btn:active,
+.navbar-toggler {
+    outline: none !important;
+    box-shadow: none !important;
+    transition: none;
+}
+
+.btn-primary {
+    background-color: hotpink!important;
+    border-color: hotpink!important;
+    outline-color: hotpink!important;
+}
+
+.border-primary {
+    border-color: hotpink!important;
+}
+
+.btn-primary:hover {
+    background-color: hotpink!important;
+    border-color: hotpink!important;
+    outline-color: hotpink!important;
+}
+
+.text-primary {
+    color: hotpink!important;
+}
+
+input[type=checkbox].star:checked + span.icon-star {
+    background-image: url("../images/Vector (1).png");
+}
+
+.text-title {
+    height: calc(3 * 1rem);
+}
+
+.text-description {
+    height: calc(6 * var(--bs-body-font-size));
+}
+
+.crop-text-1,
+.crop-text-2,
+.crop-text-3,
+.crop-text-4 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.crop-text-1 {
+    -webkit-line-clamp: 1;
+}
+
+.crop-text-2 {
+    -webkit-line-clamp: 2;
+}
+
+.crop-text-3 {
+    -webkit-line-clamp: 3;
+}
+
+.crop-text-4 {
+    -webkit-line-clamp: 4;
+}
+
+.offcanvas {
+    visibility: visible!important;
+}
+
+.card-width {
+    
+    --gap: 15px;
+    --margin: calc(var(--gap) / 2);
+    
+    width: calc((100% / 4) - var(--gap));
+    margin-right: var(--margin);
+    margin-left: var(--margin);
+    margin-top: var(--gap);
+}
+
+/*
+ *  Адаптив
+ */
+
+@media screen and (max-width: 1380px) {
+    .card-width {
+        width: calc((100% / 3) - var(--gap));
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    .carousel,
+    .carousel .carousel-item,
+    .carousel .carousel-inner,
+    .carousel .carousel-item > img {
+        height: 500px!important;
+    }
+}
+
+@media screen and (max-width: 1000px) {
+    .carousel,
+    .carousel .carousel-item,
+    .carousel .carousel-inner,
+    .carousel .carousel-item > img {
+        height: 450px!important;
+    }
+}
+
+@media screen and (max-width: 991px) {
+    .card-width {
+        width: calc((100% / 2) - var(--gap));
+    }
+}
+
+@media screen and (max-width: 800px) {
+    .carousel,
+    .carousel .carousel-item,
+    .carousel .carousel-inner,
+    .carousel .carousel-item > img {
+        height: 400px!important;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .product-image,
+    .product-image img {
+        width: calc(100% - 15px)!important;
+    }
+    
+    .product-info {
+        width: calc(92%)!important;
+    }
+
+    .card-width {
+        width: calc((100% / 1.25) - var(--gap));
+        margin: 0 auto;
+        margin-top: var(--gap);
+    }
+}
+
+@media screen and (max-width: 574px) {
+    .card-width {
+        width: calc((100% / 2) - var(--gap));
+        margin-right: var(--margin);
+        margin-left: var(--margin);
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .text-title {
+        height: calc(3 * 1rem);
+    }
+    
+    .carousel, 
+    .carousel .carousel-item,
+    .carousel .carousel-inner,
+    .carousel .carousel-item > img {
+        height: 300px!important;
+    }
+    
+    .offcanvas {
+        font-size: 1.5em;
+    }
+}
+
+@media screen and (max-width: 450px) {
+    .card-width {
+        width: calc((100% / 1.25) - var(--gap));
+        margin: 0 auto;
+        margin-top: var(--gap);
+    }
+}

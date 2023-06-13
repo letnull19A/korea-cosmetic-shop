@@ -1,0 +1,222 @@
+﻿@using WebApplication1.DTOs;
+@using WebApplication1.Models.DTOs;
+
+@model ProductInfoDto
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="d-flex flex-row gap-1">
+    <div class="col-3 d-none d-sm-block h-100" id="menu">
+    </div>
+    <div class="col-12 col-sm-9">
+        <div class="card w-100 d-flex flex-column flex-md-row pb-3">
+            <div class="product-image">
+                <img class="mt-3 ms-3" src="@Url.Content("~/Uploads/" + @Model.WrapperImage)" style="width: 300px; height: 250px;"/>
+            </div>
+            <div class="product-info d-flex ms-3 mt-3 flex-column w-100 me-3">
+                <div class="w-100 d-flex flex-column" style="min-height: 210px; height:  auto;">
+                    <h2>@Model.Name</h2>
+                    <h4>
+                        @Model.Price <i class="fa-solid fa-ruble-sign"></i>
+                    </h4>
+                    <h4 class="text-primary">@(@Model.Count > 0 ? "В наличии" : "Нет в наличии")</h4>
+                    <div class="d-flex flex-row align-items-center">
+                        <img style="width: 30px; height: 30px;" src="~/images/Vector (1).png"/>
+                        <span style="font-size: 25px;" class="ms-3">0/5</span>
+                    </div>
+                </div>
+                @if (User?.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    <div class="mt-2 d-flex flex-row w-100 justify-content-between">
+                        @if (!Model.IsFavorite)
+                        {
+                            <button onclick="toFavorite('@Model.Id')" style="width: 49%;" class="btn btn-primary">В избранное</button>
+                        }
+                        else
+                        {
+                            <button onclick="toFavorite('@Model.Id')" style="width: 49%;" class="btn btn-outline-primary">В избранном</button>
+                        }
+                        @if (!Model.IsProductInBasket)
+                        {
+                            <button onclick="toBasket('@Model.Id')" style="width: 49%;" class="btn btn-secondary">В корзину</button>
+                        }
+                        else
+                        {
+                            <button onclick="deleteFromBasket('@Model.Id')" style="width: 49%;" class="btn btn-outline-secondary">Добавлено в корзину</button>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="card mt-4">
+            <div class="m-3">
+                <h2>О товаре</h2>
+                <article>
+                    @Model.Description
+                </article>
+            </div>
+        </div>
+        <div class="mt-4">
+            <div class="card p-3">
+                <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="true">
+                    <div class="carousel-indicators">
+                        @for (int i = 0; i < Model.Images.Length; i++)
+                        {
+                            @if (i == 1)
+                            {
+                                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="@i" class="active" aria-current="true" aria-label="Slide 1"></button>
+                                break;
+                            }
+
+                            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="@i" aria-label="Slide 2"></button>
+                        }
+                    </div>
+                    <div class="carousel-inner">
+                        @for (int i = 0; i < Model.Images.Length; i++)
+                        {
+                            <div class="carousel-item active">
+                                @if (i == 1)
+                                {
+                                    <img src="~/Uploads/@Model.Images[i]" class="d-block w-100 active">
+                                    break;
+                                }
+
+                                <img src="~/Uploads/@Model.Images[i]" class="d-block w-100">
+                            </div>
+                        }
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card mt-4">
+            <div class="m-3">
+                <h2>Состав</h2>
+                <article>
+                    @Model.Composition
+                </article>
+            </div>
+        </div>
+        <div class="card mt-4">
+            <div class="m-3">
+                <h2>Оставить отзыв</h2>
+                @if (User?.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    <div class="w-100">
+                        <textarea id="review-message" class="form-control" rows="3"></textarea>
+                    </div>
+                    <button onclick="sendReview(`@Model.Id`);" class="mt-3 btn btn-primary">Отправить</button>
+                }
+                else
+                {
+                    <div class="col-3 d-md-flex flex-row justify-content-between">
+                        <a style="height: 38px;" class="btn btn-primary me-2" asp-controller="Public" asp-action="Login">Войти</a>
+                        <a style="height: 38px;" class="nav-link text-dark" asp-controller="Public" asp-action="Registration">Регистрация</a>
+                    </div>
+                }
+            </div>
+            <div class="m-3">
+                <h2>Отзывы</h2>
+                <div id="review-list" class="d-flex flex-column">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $('#menu').load('@Url.Content("/Categories/GetAllPartial")');
+        $('#menu-mobile').load('@Url.Content("/Categories/GetAllPartial")');
+
+        $(document).ready(() => displayReviews())
+
+        const sendReview = (id) => {
+            $.ajax({
+                url: '@Url.Action("Add", "Review")',
+                method: 'PUT',
+                data: { productId: id, message: $('#review-message').val() },
+                async: false
+            })
+
+            window.location.reload();
+        }
+
+        const displayReviews = () => {
+            let reviewBlock = $("#review-list")
+            let data = loadReviews('@Model.Id');
+
+            console.log(data)
+            
+            for (let i = 0; i < data.length; i++) {
+                reviewBlock.append(`
+                    <div class="d-flex flex-row mt-2 mb-2">
+                        <div class="image">
+                            <img src='@Url.Content("/images/Image.png")' style="width: 100px; height: 100px;"/>
+                        </div>
+                        <div class="content ms-4">
+                            <div class="content-info">
+                                <h5>${data[i].name} ${data[i].surname}</h5>
+                            </div>
+                            <div class="content-text">
+                                ${data[i].message}
+                            </div>
+                        </div>
+                    </div>
+                `)
+            }
+        }
+
+        const loadReviews = (id) => {
+            return $.ajax({
+                url: '@Url.Action("Get", "Review")',
+                method: 'GET',
+                data: { productId: id },
+                async: false
+            }).responseJSON
+        }
+
+        const toFavorite = (id) => {
+            $.ajax({
+                url: '@Url.Action("Add", "Favorites")',
+                method: 'PUT',
+                data: { productId: id },
+                async: false
+            })
+
+            window.location.reload();
+        }
+
+        const toBasket = (id) => {
+            $.ajax({
+                url: '@Url.Action("Add", "Basket")',
+                method: 'PUT',
+                data: { productId: id },
+                async: false
+            })
+
+            window.location.reload();
+        }
+
+        const deleteFromBasket = (id) => {
+            $.ajax({
+                url: '@Url.Action("Delete", "Basket")',
+                method: 'DELETE',
+                data: { id: id },
+                async: false
+            })
+
+            window.location.reload();
+        }
+
+    </script>
+}

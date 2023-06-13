@@ -1,0 +1,175 @@
+﻿@using WebApplication1.DTOs;
+@model List<ProductInBasketDto>
+
+<!--Всплывающее окно--> 
+<div class="modal fade" id="checkModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <!--Блок отвечающий за отображаемую часть всплывающего окна-->
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <!--Блок с контентом-->
+        <div class="modal-content">
+            <!--Шапка всплывающего окна-->
+            <div class="modal-header">
+                <!--Заголовок-->
+                <h5 class="modal-title" id="exampleModalLongTitle">Оплата товара</h5>
+                <!--Кнопка закрыть-->
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <!--Контент всплывающего окна-->
+            <div class="modal-body">
+                <!--Блок с QR кодом-->
+                <div style="width: 300px; height: 300px;" class="mx-auto" id="qr-code"></div>
+                <!--Контейнер со списком купленых товаров-->
+                <div class="d-flex flex-column">
+                    <!--Вывод товаров-->
+                    @foreach (var item in Model)
+                    {
+                        <!--Элемент списка-->
+                        <div class="d-flex flex-row justify-content-between mt-1 mb-1">
+                            <!--Название товара-->
+                            <span style="max-width: 40%; width:  40%;">
+                                @item.Name
+                            </span>
+                            <!--Цена товара за 1шт-->
+                            <span>
+                                @item.Price руб.
+                            </span>
+                            <!--Количество-->
+                            <span id="final-cunt-modal">
+                                x @item.Count
+                            </span>
+                        </div>
+                    }
+                </div>
+                <!--Горизонтальная черта-->
+                <hr/>
+                <!--Текст итоговой стоимости товара-->
+                <h4>ИТОГО <span id="final-price-modal"></span> рублей</h4>
+            </div>
+            <!--Подвал модального окна-->
+            <div class="modal-footer">
+                <!--Кнопка закрыть-->
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex flex-column flex-md-row gap-1">
+    <div class="col-12 col-md-9">
+        <div class="w-100 d-flex flex-column">
+            <div class="card">
+                <h1 class="ps-3 pt-2">Корзина</h1>
+                <div class="d-flex flex-wrap flex-row pb-3">
+                    @foreach (var item in Model)
+                    {
+                        <div class="card card-width">
+                            <div class="card-img-top">
+                                <img class="w-100" src="~/Uploads/@item.WrapperImage"/>
+                                <div class="card-img-overlay h-50">
+                                    <button onclick="deleteFromBasket('@item.Id')" class=" position-absolute top-0 start-auto end-0 rounded-1 border-0 btn btn-danger text-white">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-title">
+                                <h4 class="ms-3 me-3 crop-text-3">
+                                    @item.Name
+                                </h4>
+                            </div>
+                            <div class="card-footer d-flex flex-row justify-content-between">
+                                <input data-itemid="@item.Id" type="number" value="@item.Count" min="1" max="@item.MaxCount" style="width: calc(100% - (48px * 2) - 20px);"/>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="card mt-3">
+                <h1 class="ps-3 pt-2">Пункт приёма</h1>
+                <div class="card-body d-flex flex-row justify-content-between">
+                    <p>Ленина 39Г, Димитровград</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-3 h-100" id="menu">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="text-center">Сумма покупки</h2>
+                <h4 class="text-center text-primary"><span id="final-price"></span> рублей</h4>
+                <button onclick="displayQR()" data-bs-toggle='modal' data-bs-target='#checkModal' class="btn btn-primary w-100 mt-3">Оплатить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/bootstrap-input-spinner.js"></script>
+    <script>
+
+        $(document).ready(() => {
+            displayFinalPrice(calculate().responseJSON);
+            
+            $('#menu-mobile').load('@Url.Content("/Categories/GetAllPartial")');
+        })
+
+        $("input[type='number']").inputSpinner(
+            {
+                buttonsClass: 'btn btn-primary',
+            }
+        );
+
+        const displayQR = () => {
+            $('#qr-code').empty()
+            
+            $('#qr-code').qrcode({
+              text: Date.now().toString(),
+            });
+
+        }
+
+        $("input[type='number']").on("change", (e) => {
+            updateCount(e.target.getAttribute("data-itemid"), e.target.value);
+        })
+
+        const updateCount = (id, count) => {
+            $.ajax({
+                url: '@Url.Action("Update", "Basket")',
+                method: 'PUT',
+                data: { productId: id, count: count },
+                async: false
+            })
+
+            displayModalCount(count)
+            displayFinalPrice(calculate().responseJSON)
+        };
+
+        const displayModalCount = (count) => {
+            $('#final-cunt-modal').text('x' + count)
+        }
+        
+        const deleteFromBasket = (id) => {
+            $.ajax({
+                url: '@Url.Action("Delete", "Basket")',
+                method: 'DELETE',
+                data: { id: id },
+                async: false
+            })
+
+            window.location.reload();
+        }
+
+        const displayFinalPrice = (value) => {
+            $("#final-price").text(value)
+            $("#final-price-modal").text(value)
+        }
+
+        const calculate = () => {
+            return $.ajax({
+                url: '@Url.Action("GetPrice", "Basket")',
+                method: 'GET',
+                async: false
+            })
+        }
+
+    </script>
+}

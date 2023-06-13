@@ -1,0 +1,19 @@
+﻿@using WebApplication1.Models.DTOs;
+@model List<CategoryDto>
+
+<div class="w-100 bg-transparent">
+    <ul class="list-group rounded-0 bg-transparent">
+        @foreach (CategoryDto item in Model)
+        {
+            <li class="bg-transparent list-group-item border-0 ps-2" style="height: 50px;">
+                <a class="text-primary ps-2 border-start border-primary border-5" href="/Categories/Get/@item.CategoryId">@item.Name</a>
+            </li>
+        }
+    </ul>
+</div>
+
+@if (User.IsInRole("admin"))
+{
+    <partial name="_AdminMenu"/>
+}
+
